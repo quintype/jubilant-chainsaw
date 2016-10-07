@@ -22,8 +22,54 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', 'localhost');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
+
+
 app.use('/', routes);
 app.use('/users', users);
+
+app.get('/stock/:stockId', function(req, res) {
+  var stock_id = req.params.stockId;
+  var response = {
+    "bse": {
+        "PX_LAST": 100.444,
+        "change": 8.45,
+        "perc_change": 2.66,
+        "prev_close": 1.55,
+        "open_price": 2.75,
+        "day_high": 3.95,
+        "day_low": 4.95
+      },
+      "nse": {
+        "PX_LAST": 200.444,
+        "change": 8.45,
+        "perc_change": 2.66,
+        "prev_close": 5.55,
+        "open_price": 6.75,
+        "day_high": 7.95,
+        "day_low": 8.95
+      }
+  }
+  res.status(200).json(response) 
+})
 
 app.get('/bqmumfeed/finance-api/quote/:stock', function(req, res) {
   var stock = req.params.stock;
